@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Notes App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ===== LOGIN PAGE ===== */
+    #login-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #e8f0fe;
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      width: 320px;
+      text-align: center;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4a90d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-box button:hover {
+      background-color: #357abd;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 12px;
+    }
+
+    /* ===== TOP BAR ===== */
+    #app-page {
+      display: none;
+    }
+
+    .topbar {
+      background-color: #4a90d9;
+      color: white;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .topbar button {
+      background: white;
+      color: #4a90d9;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .container {
+      display: flex;
+      height: calc(100vh - 56px);
+    }
+
+    /* ===== LEFT PANEL ===== */
+    .left-panel {
+      width: 280px;
+      background: white;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+    }
+
+    .left-panel input {
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .left-panel button {
+      padding: 9px;
+      background-color: #4a90d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    .left-panel button:hover {
+      background-color: #357abd;
+    }
+
+    .note-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 6px;
+      background-color: #f7f7f7;
+      border: 1px solid #e0e0e0;
+    }
+
+    .note-item:hover {
+      background-color: #e8f0fe;
+    }
+
+    .note-item.selected {
+      background-color: #4a90d9;
+      color: white;
+    }
+
+    .note-item .note-title {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .note-item .note-date {
+      font-size: 11px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .note-item.selected .note-date {
+      color: #cce0f5;
+    }
+
+    .no-notes-msg {
+      color: #aaa;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ===== RIGHT PANEL ===== */
+    .right-panel {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      background-color: #fafafa;
+    }
+
+    .right-panel input {
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .right-panel textarea {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: none;
+      line-height: 1.6;
+      font-family: Arial, sans-serif;
+    }
+
+    .editor-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-save {
+      padding: 9px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-save:hover { background-color: #218838; }
+
+    .btn-delete {
+      padding: 9px 20px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-delete:hover { background-color: #c82333; }
+
+    .save-msg {
+      color: green;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .placeholder-msg {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #bbb;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== LOGIN PAGE ===== -->
+  <div id="login-page">
+    <div class="login-box">
+      <h2>📓 My Notes App</h2>
+      <input type="text"     id="username" placeholder="Enter your name" />
+      <input type="password" id="password" placeholder="Enter password" />
+      <div class="error-msg" id="error-msg">Wrong password. Try: notes123</div>
+      <button onclick="login()">Login</button>
+      <p class="hint">Password: <b>notes123</b></p>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP PAGE ===== -->
+  <div id="app-page">
+
+    <div class="topbar">
+      <h2>📓 My Notes</h2>
+      <span id="welcome-text">Hello!</span>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+
+      <!-- LEFT: Note List -->
+      <div class="left-panel">
+        <input type="text" id="search-box" placeholder="🔍 Search notes..." oninput="searchNotes()" />
+        <button onclick="createNewNote()">+ New Note</button>
+        <div id="notes-list"></div>
+      </div>
+
+      <!-- RIGHT: Editor -->
+      <div class="right-panel">
+
+        <div class="placeholder-msg" id="placeholder">
+          ← Select a note or create a new one
+        </div>
+
+        <div id="editor" style="display:none; flex-direction:column; flex:1;">
+          <input type="text" id="note-title" placeholder="Note Title" />
+          <textarea id="note-content" placeholder="Write your note here..."></textarea>
+          <div class="editor-buttons">
+            <button class="btn-save"   onclick="saveNote()">💾 Save</button>
+            <button class="btn-delete" onclick="deleteNote()">🗑️ Delete</button>
+          </div>
+          <div class="save-msg" id="save-msg">✅ Note saved!</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+
+    var currentUser   = "";
+    var notes         = [];
+    var selectedIndex = -1;
+
+    // ----- LOGIN -----
+    function login() {
+      var name = document.getElementById("username").value.trim();
+      var pass = document.getElementById("password").value;
+
+      if (name === "") {
+        document.getElementById("error-msg").innerText = "Please enter your name.";
+        document.getElementById("error-msg").style.display = "block";
+        return;
+      }
+
+      if (pass !== "notes123") {
+        document.getElementById("error-msg").innerText = "Wrong password. Try: notes123";
+        document.getElementById("error-msg").style.display = "block";
+        return;
+      }
+
+      currentUser = name;
+      document.getElementById("error-msg").style.display = "none";
+      document.getElementById("welcome-text").innerText = "Hello, " + name + "!";
+
+      loadNotesFromStorage();
+
+      document.getElementById("login-page").style.display = "none";
+      document.getElementById("app-page").style.display   = "block";
+
+      renderNotesList();
+    }
+
+    document.getElementById("password").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") login();
+    });
+
+    // ----- LOGOUT -----
+    function logout() {
+      currentUser   = "";
+      notes         = [];
+      selectedIndex = -1;
+
+      document.getElementById("app-page").style.display   = "none";
+      document.getElementById("login-page").style.display = "flex";
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("editor").style.display      = "none";
+      document.getElementById("placeholder").style.display = "flex";
+    }
+
+    // ----- SAVE / LOAD from browser storage -----
+    function saveNotesToStorage() {
+      localStorage.setItem("notes_" + currentUser, JSON.stringify(notes));
+    }
+
+    function loadNotesFromStorage() {
+      var saved = localStorage.getItem("notes_" + currentUser);
+      notes = saved ? JSON.parse(saved) : [];
+    }
+
+    // ----- CREATE NOTE -----
+    function createNewNote() {
+      var newNote = {
+        title:   "Untitled Note",
+        content: "",
+        date:    getToday()
+      };
+      notes.unshift(newNote);
+      saveNotesToStorage();
+      selectedIndex = 0;
+      renderNotesList();
+      openEditor();
+    }
+
+    // ----- OPEN EDITOR -----
+    function openEditor() {
+      var note = notes[selectedIndex];
+      document.getElementById("note-title").value   = note.title;
+      document.getElementById("note-content").value = note.content;
+      document.getElementById("placeholder").style.display = "none";
+      document.getElementById("editor").style.display      = "flex";
+      document.getElementById("save-msg").style.display    = "none";
+    }
+
+    // ----- SAVE NOTE -----
+    function saveNote() {
+      if (selectedIndex === -1) return;
+
+      notes[selectedIndex].title   = document.getElementById("note-title").value || "Untitled Note";
+      notes[selectedIndex].content = document.getElementById("note-content").value;
+      notes[selectedIndex].date    = getToday();
+
+      saveNotesToStorage();
+      renderNotesList();
+
+      document.getElementById("save-msg").style.display = "block";
+      setTimeout(function() {
+        document.getElementById("save-msg").style.display = "none";
+      }, 2000);
+    }
+
+    // ----- DELETE NOTE -----
+    function deleteNote() {
+      if (selectedIndex === -1) return;
+      if (!confirm("Delete this note?")) return;
+
+      notes.splice(selectedIndex, 1);
+      saveNotesToStorage();
+      selectedIndex = -1;
+
+      document.getElementById("editor").style.display      = "none";
+      document.getElementById("placeholder").style.display = "flex";
+      renderNotesList();
+    }
+
+    // ----- SHOW NOTES IN LIST -----
+    function renderNotesList(filterText) {
+      var listDiv = document.getElementById("notes-list");
+      listDiv.innerHTML = "";
+
+      var displayNotes = [];
+
+      if (filterText && filterText.trim() !== "") {
+        var q = filterText.toLowerCase();
+        for (var i = 0; i < notes.length; i++) {
+          if (notes[i].title.toLowerCase().includes(q) ||
+              notes[i].content.toLowerCase().includes(q)) {
+            displayNotes.push({ note: notes[i], realIndex: i });
+          }
+        }
+      } else {
+        for (var i = 0; i < notes.length; i++) {
+          displayNotes.push({ note: notes[i], realIndex: i });
+        }
+      }
+
+      if (displayNotes.length === 0) {
+        listDiv.innerHTML = '<p class="no-notes-msg">No notes found.</p>';
+        return;
+      }
+
+      for (var j = 0; j < displayNotes.length; j++) {
+        var item    = displayNotes[j];
+        var note    = item.note;
+        var realIdx = item.realIndex;
+
+        var div = document.createElement("div");
+        div.className = "note-item" + (realIdx === selectedIndex ? " selected" : "");
+        div.innerHTML =
+          '<div class="note-title">' + note.title + '</div>' +
+          '<div class="note-date">'  + note.date  + '</div>';
+
+        div.onclick = (function(idx) {
+          return function() {
+            selectedIndex = idx;
+            renderNotesList(document.getElementById("search-box").value);
+            openEditor();
+          };
+        })(realIdx);
+
+        listDiv.appendChild(div);
+      }
+    }
+
+    // ----- SEARCH -----
+    function searchNotes() {
+      var query = document.getElementById("search-box").value;
+      renderNotesList(query);
+    }
+
+    // ----- HELPER: today's date -----
+    function getToday() {
+      return new Date().toLocaleDateString("en-US", {
+        month: "short", day: "numeric", year: "numeric"
+      });
+    }
+
+  </script>
+
+</body>
+</html>
